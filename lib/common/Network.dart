@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_11_27_1/common/MyState.dart';
+import 'package:flutter_11_27_1/common/User.dart';
 
 class Api {
-  static const String BaseUrl = "http://jiri1.api.sljy.com/api/";
+  static const String BaseUrl = "http://94.191.0.166:8080/dayby/api/";
 
 }
 
@@ -17,8 +20,13 @@ class Network {
   }
 
   //post请求
-  static void post(String url, {Map<String, String> params, bool isFormat, Function callBack, Function errorCallBack}) async {
-    _request(Api.BaseUrl + url, method: POST, isFormat: isFormat, params: params, callBack: callBack, errorCallBack: errorCallBack);
+  static void post(String url, {Map<String, String> params, Function callBack, Function errorCallBack}) async {
+    _request(Api.BaseUrl + url, method: POST, isFormat: false, params: params, callBack: callBack, errorCallBack: errorCallBack);
+  }
+
+  //post请求
+  static void postFormat(String url, {Map<String, String> params, Function callBack, Function errorCallBack}) async {
+    _request(Api.BaseUrl + url, method: POST, isFormat: true, params: params, callBack: callBack, errorCallBack: errorCallBack);
   }
 
   //具体的还是要看返回数据的基本结构
@@ -35,9 +43,22 @@ class Network {
 
     String errorMsg = "";
     int statusCode;
+    var token = '';
+
+    var w = StoreConnector<MyState, User>(
+      converter: (store) => store.state.userInfo,
+      builder: (context, userInfo) {
+        token = userInfo.name;
+        print('token' + token);
+      },
+    );
 
     try {
       Response response;
+      Dio dio = new Dio();
+      dio.options.headers = {
+        "Content-Type": "application/json",
+      };
       if (method == GET) {
         //组合GET请求的参数
         if (params != null && params.isNotEmpty) {
@@ -49,23 +70,22 @@ class Network {
           paramStr = paramStr.substring(0, paramStr.length - 1);
           url += paramStr;
         }
-        response = await Dio().get(url);
+        response = await dio.get(url);
       } else {
         if (params != null && params.isNotEmpty) {
           if (isFormat) {
             FormData form = new FormData.from(params);
-            response = await Dio().post(url, data: form);
+            response = await dio.post(url, data: form);
           } else {
-            response = await Dio().post(url, data: params);
+            response = await dio.post(url, data: params);
           }
         } else {
-          response = await Dio().post(url);
+          response = await dio.post(url);
         }
       }
 
       print(response);
       statusCode = response.statusCode;
-      print(response.statusCode);
 
       print(statusCode);
 
@@ -81,7 +101,7 @@ class Network {
         print("<net> response data:" + response.data["data"]);
       }
     } catch (exception) {
-      _handError(errorCallBack, exception.toString());
+      print(exception);
     }
   }
 

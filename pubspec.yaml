@@ -29,16 +29,18 @@ dependencies:
   shared_preferences: ^0.4.2
   #toast
   fluttertoast: 2.0.9
-  #
+  #订阅模式
   event_bus:  ^1.0.1
   #屏幕适配
   flutter_screenutil: ^0.4.2
+  #全局状态管理
+  flutter_redux: ^0.5.2
 
 
 dev_dependencies:
   #json解析
-  build_runner: ^1.1.1
-  json_serializable: ^2.0.0
+  build_runner: ^1.1.2
+  json_serializable: ^2.0.1
 #  flutter_test:
 #    sdk: flutter
 

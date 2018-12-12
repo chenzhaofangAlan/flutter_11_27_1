@@ -17,7 +17,7 @@ class loginPageWidgetState extends State<loginPageWidget> {
 
   valueChanged () {
     setState(() {
-      if (widget.userController.text.length == 11 && widget.pwController.text.length >= 6) {
+      if (widget.userController.text.length > 0 && widget.pwController.text.length >= 6) {
         canClickLogin = true;
       } else {
         canClickLogin = false;

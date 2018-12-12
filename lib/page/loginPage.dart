@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_11_27_1/widget/MyFlexButton.dart';
-import 'package:flutter_11_27_1/widget/MyInputWidget.dart';
+
 import 'package:flutter_11_27_1/page/homePage.dart';
 import 'dart:convert';
 import 'package:flutter_11_27_1/common/NetWork.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_11_27_1/widget/loginPageWidget.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_11_27_1/common/MyState.dart';
+import 'package:flutter_11_27_1/common/User.dart';
 
 class loginPage extends StatefulWidget {
   @override
@@ -33,20 +35,21 @@ class loginPageState extends State<loginPage> {
 
   loginBtnClick () async {
     Map<String, String> requestParams = {
-      "phone": userController.text,
+      "name": userController.text,
       "password": pwController.text
     };
-    Network.post('user/login', params: requestParams, isFormat: true, callBack: (data) {
+    Network.post('user/login', params: requestParams, callBack: (data) {
+      var userInfo = User.fromJson(data['user']);
+      StoreProvider.of<MyState>(context).dispatch(new UpdateUserAction(userInfo));
       Navigator.push(context,
           new MaterialPageRoute(builder: (context) {
             return new MyHomePage();
           })
       );
-//      Navigator.pushNamed(context, '/homePage');
-      print('data'+data);
 
+//      Navigator.pushNamed(context, '/homePage');
     }, errorCallBack: (error) {
-      print('error'+error);
+      print(error);
     });
   }
 }
